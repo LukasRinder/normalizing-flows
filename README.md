@@ -31,10 +31,9 @@ As example Masked Autoregressive Flow is used to estimate the density of a 2D to
 The experiments folder contains experiments that we performed, including example heatmaps of approximated distributions and generated images from training on MNIST and CelebA.
 Below we show some examples.
 
-- Density estimation on toy data:
+- Density estimation on toy data (left: ground truth, right: estimated density with MAF:
 
-<img src="visualizations/ground_truth_toy_data/tum_1000.png" width="200" height="200" />
-<img src="/experiments/maf/example_results/toy_data/tum_density_800_64_[128, 128].png" width="250" height="200" />
+<img src="visualizations/ground_truth_toy_data/tum_1000.png" width="200" height="200" /> <img src="/experiments/maf/example_results/toy_data/tum_density_800_64_[128, 128].png" width="250" height="200" />
 
 
 - Visualization how samples from a Gaussian base distribution are transformed through 8 layers of Real NVP to match the target distribution:
@@ -43,12 +42,12 @@ Below we show some examples.
 
 - Generated images from training on the classes "2", "4", "7", and "8" of the MNIST dataset (from left to right: ground truth, Real NVP, MAF)
 
-<img src="visualizations/mnist_realnvp_maf.png" width="400" height="200" />
+<img src="visualizations/mnist_realnvp_maf.png" width="350" height="200" />
 
 
 - Generated images from training on the CelebA dataset (from left to right: ground truth, Real NVP, MAF)
 
-<img src="visualizations/celeba_all.png" width="400" height="200" />
+<img src="visualizations/celeba_all.png" width="350" height="200" />
 
 
 As next steps, it would by interesting to implement more flows such as Neural Autoregressive Flows [9], Glow [10], and FFJORD [11].
