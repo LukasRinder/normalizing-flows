@@ -1,0 +1,9 @@
+python>=3.6
+tensorflow-gpu=2.0.0
+tensorflow-probability=0.8.0
+tensorflow-datasets=1.2.0
+numpy=1.17.3
+matplotlib=3.1.1
+jupyterlab=1.1.4
+pandas=0.25.3
+scikit-learn=0.22.1
