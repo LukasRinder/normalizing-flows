@@ -10,7 +10,7 @@ Currently implemented flows are:
 - Inverse Autoregressive Flow (IAF) [4]
 - Neural Spline Flow [5] 
 
-The implementatios are located in [normalizingflows/flow_catalog.py](/normalizingflows/flow_catalog.py). 
+The implementations are located in [normalizingflows/flow_catalog.py](/normalizingflows/flow_catalog.py). 
 For MAF, the Tensorflow implementation is used [6]. 
 The MADE [7] network for modelling the shift and scale parameters can also be loaded from the flow catalog. 
 Note that IAF can be obtained with the Tensorflow bijector inverse function, as described in the Tensorflow documentation [6].
