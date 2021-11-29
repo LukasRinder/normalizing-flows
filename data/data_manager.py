@@ -38,7 +38,7 @@ class Dataset():
                   "bsds300": 1000000}
             self.dataset_size = uci_trainsizes[dataset_name]
         
-        elif dataset_name is "mnist":
+        elif dataset_name == "mnist":
             self.batched_train_data, self.batched_val_data, self.batched_test_data, interval = load_and_preprocess_mnist(logit_space=True, batch_size=128, shuffle=True, classes=category, channels=False)
             self.data_type = DataType.mnist
             sample_batch = next(iter(self.batched_train_data))
@@ -51,7 +51,7 @@ class Dataset():
             self.dataset_size = 50000
 
         #celeb should be proccessed while training
-        elif dataset_name is "celeb":
+        elif dataset_name == "celeb":
             self.data_type = DataType.celeb
             self.batched_train_data, self.batched_val_data, self.batched_test_data, interval = load_celeb(logit_space=True, batch_size=128, shuffle=True)
             
