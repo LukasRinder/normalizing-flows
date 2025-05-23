@@ -1,3 +1,5 @@
+from typing import List, Tuple, Dict, Union, Optional
+import tensorflow as tf
 from data.dataset_loader import *
 from enum import Enum
 from normalizingflows.flow_manager import FlowType
@@ -8,13 +10,24 @@ from data.dataset_loader import load_and_preprocess_celeb
 from utils.train_utils import shuffle_split
 from utils.types import DataType
 
-class Dataset():
-    def __init__(self, dataset_name, batch_size, data_size=2000, category=-1):
+class Dataset:
+    name: str
+    batch_size: int
+    batched_train_data: tf.data.Dataset
+    batched_val_data: tf.data.Dataset
+    batched_test_data: tf.data.Dataset
+    intervals: List[float]
+    data_type: DataType
+    input_output_shape: Tuple[Union[int, Tuple[int, int]], Union[int, Tuple[int, int]]]
+    dataset_size: Optional[int]
+
+    def __init__(self, dataset_name: str, batch_size: int, data_size: int = 2000, category: int = -1) -> None:
         self.name = dataset_name.lower()
         self.batch_size = batch_size
+        self.dataset_size = None
 
         if dataset_name in ["swissroll", "circles", "rings", "moons", "4gaussians", "8gaussians", "pinwheel", "2spirals", "checkerboard", "line", "cos", "tum", "random_toy_data"]:
-                    # get train data and perform a train-validation-test split
+            # get train data and perform a train-validation-test split
             train_split = 0.8
             val_split = 0.1
             samples, interval = generate_2d_data(dataset_name, batch_size=data_size)
@@ -31,15 +44,19 @@ class Dataset():
             sample_batch = next(iter(self.batched_train_data))
             input_shape = sample_batch.shape[1]
             self.input_output_shape = (input_shape, input_shape)
-            uci_trainsizes = {"power": 1659917,
-                  "gas": 852174,
-                  "hepmass": 315123,
-                  "miniboone": 29556,
-                  "bsds300": 1000000}
+            uci_trainsizes: Dict[str, int] = {
+                "power": 1659917,
+                "gas": 852174,
+                "hepmass": 315123,
+                "miniboone": 29556,
+                "bsds300": 1000000
+            }
             self.dataset_size = uci_trainsizes[dataset_name]
         
         elif dataset_name == "mnist":
-            self.batched_train_data, self.batched_val_data, self.batched_test_data, interval = load_and_preprocess_mnist(logit_space=True, batch_size=128, shuffle=True, classes=category, channels=False)
+            self.batched_train_data, self.batched_val_data, self.batched_test_data, interval = load_and_preprocess_mnist(
+                logit_space=True, batch_size=128, shuffle=True, classes=category, channels=False
+            )
             self.data_type = DataType.mnist
             sample_batch = next(iter(self.batched_train_data))
             # assumes channels first
@@ -50,13 +67,14 @@ class Dataset():
             self.input_output_shape = (input_shape, (size, size))
             self.dataset_size = 50000
 
-        #celeb should be proccessed while training
         elif dataset_name == "celeb":
             self.data_type = DataType.celeb
-            self.batched_train_data, self.batched_val_data, self.batched_test_data, interval = load_celeb(logit_space=True, batch_size=128, shuffle=True)
+            self.batched_train_data, self.batched_val_data, self.batched_test_data, interval = load_and_preprocess_celeb(
+                logit_space=True, batch_size=128, shuffle=True
+            )
             
             # assumes batch size first
-            sample_batch = next(iter(batched_train_data))
+            sample_batch = next(iter(self.batched_train_data))
             celeb_shape = sample_batch["image"].shape[1:]
             input_shape = celeb_shape[0] * celeb_shape[1] * celeb_shape[2]
             
@@ -64,32 +82,32 @@ class Dataset():
             self.input_output_shape = (input_shape, (size, size))
             self.dataset_size = 202599
                               
-    def get_interval(self):
+    def get_interval(self) -> List[float]:
         return self.intervals
     
-    def get_train_data(self):
+    def get_train_data(self) -> tf.data.Dataset:
         return self.batched_train_data
     
-    def get_validation_data(self):
+    def get_validation_data(self) -> tf.data.Dataset:
         return self.batched_val_data
     
-    def get_test_data(self):
+    def get_test_data(self) -> tf.data.Dataset:
         return self.batched_test_data
     
-    def get_data_type(self):
+    def get_data_type(self) -> DataType:
         return self.data_type
     
-    def get_name(self):
+    def get_name(self) -> str:
         return self.name
     
-    def get_dataset_size(self):
+    def get_dataset_size(self) -> Optional[int]:
         return self.dataset_size
     
-    def get_data_shape(self):
+    def get_data_shape(self) -> Tuple[Union[int, Tuple[int, int]], Union[int, Tuple[int, int]]]:
         return self.input_output_shape
 
-    def get_batch_size(self):
+    def get_batch_size(self) -> int:
         return self.batch_size
 
-    def get_data(self):
+    def get_data(self) -> Tuple[tf.data.Dataset, tf.data.Dataset, tf.data.Dataset]:
         return self.batched_train_data, self.batched_val_data, self.batched_test_data
