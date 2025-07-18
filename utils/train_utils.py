@@ -5,7 +5,7 @@ List of functions:
 1. sanity_check
 '''
 
-
+from typing import Tuple, Union, Optional
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -16,7 +16,7 @@ tfb = tfp.bijectors
 '''---------------------------------------- Negative Log Likelihood -------------------------------------------------'''
 
 @tf.function
-def nll(distribution, data):
+def nll(distribution: tf.distributions.Distribution, data: tf.Tensor) -> tf.Tensor:
     """
     Computes the negative log liklihood loss for a given distribution and given data.
     :param distribution: TensorFlow distribution, e.g. tf.TransformedDistribution.
@@ -29,7 +29,7 @@ def nll(distribution, data):
 '''--------------------------------------------- Train function -----------------------------------------------------'''
 
 @tf.function
-def train_density_estimation(distribution, optimizer, batch):
+def train_density_estimation(distribution: tf.distributions.Distribution, optimizer: tf.keras.optimizers.Optimizer, batch: tf.Tensor) -> tf.Tensor:
     """
     Train function for density estimation normalizing flows.
     :param distribution: TensorFlow distribution, e.g. tf.TransformedDistribution.
@@ -46,7 +46,7 @@ def train_density_estimation(distribution, optimizer, batch):
     return loss
 
 
-def train_density_no_tf(distribution, optimizer, batch):
+def train_density_no_tf(distribution: tf.distributions.Distribution, optimizer: tf.keras.optimizers.Optimizer, batch: tf.Tensor) -> tf.Tensor:
     """
     Train function for density estimation normalizing flows without tf.function decorator
     :param distribution: TensorFlow distribution, e.g. tf.TransformedDistribution.
@@ -64,7 +64,7 @@ def train_density_no_tf(distribution, optimizer, batch):
 '''----------------- Sanity check: after training the integral of the pdf has to sum up to one ----------------------'''
 
 
-def sanity_check(dist, xmin=-4.0, xmax=4.0, ymin=-4.0, ymax=4.0, mesh_count=1000):
+def sanity_check(dist: tf.distributions.Distribution, xmin: float = -4.0, xmax: float = 4.0, ymin: float = -4.0, ymax: float = 4.0, mesh_count: int = 1000) -> tf.Tensor:
     '''
     Implementation of a approximated integral over a mesh grid from [xmin, xmax, ymin, ymax].
     The higher mesh_count, the more accurate the approximation.
@@ -98,7 +98,7 @@ def sanity_check(dist, xmin=-4.0, xmax=4.0, ymin=-4.0, ymax=4.0, mesh_count=1000
 '''------------------------------------ Train-Validation-Test Split -------------------------------------------------'''
 
 
-def shuffle_split(samples, train_split, val_split):
+def shuffle_split(samples: np.ndarray, train_split: float, val_split: float) -> Tuple[tf.Tensor, tf.Tensor, tf.Tensor]:
     '''
     Shuffles the data and performs a train-validation-test split.
     Test = 1 - (train + val).
@@ -123,7 +123,7 @@ def shuffle_split(samples, train_split, val_split):
     return train_data, val_data, test_data
 
 
-def checkerboard(height, width, reverse=False, dtype=tf.float32):
+def checkerboard(height: int, width: int, reverse: bool = False, dtype: tf.DType = tf.float32) -> tf.Tensor:
     checkerboard = [[((i % 2) + j) % 2 for j in range(width)] for i in range(height)] 
     checkerboard = tf.convert_to_tensor(checkerboard, dtype = dtype)
     if reverse:

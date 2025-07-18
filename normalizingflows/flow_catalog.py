@@ -20,6 +20,7 @@ The log of the absolute value of the determinant of the matrix of all first-orde
 "forward" and "forward_log_det_jacobian" have to be defined to perform sampling.
 "inverse" and "inverse_log_det_jacobian" have to be defined to perform density estimation.
 '''
+from typing import List, Tuple, Optional, Union, Any
 import time
 
 import numpy as np
@@ -736,7 +737,7 @@ class BatchNorm(tfb.Bijector):
 '''---------------------------------------------- Trainable Variables -----------------------------------------------'''
 
 
-def get_trainable_variables(flow):
+def get_trainable_variables(flow: tf.distributions.TransformedDistribution) -> int:
     """
     Returns the number of trainable variables/weights of a flow.
     :param flow: A normalizing flow in the form of a TensorFlow Transformed Distribution.

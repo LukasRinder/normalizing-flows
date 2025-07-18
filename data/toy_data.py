@@ -1,3 +1,4 @@
+from typing import Tuple, Optional, Union
 import numpy as np
 import sklearn
 import sklearn.datasets
@@ -9,7 +10,7 @@ tfd = tfp.distributions
 
 
 # Dataset iterator for generation of dataset samples
-def generate_2d_data(data, rng=None, batch_size=1000):
+def generate_2d_data(data: str, rng: Optional[np.random.RandomState] = None, batch_size: int = 1000) -> Tuple[np.ndarray, float]:
     if rng is None:
         rng = np.random.RandomState()
 
@@ -169,7 +170,7 @@ def generate_2d_data(data, rng=None, batch_size=1000):
 
 
 # distribution generator for initial distribution and sampling
-def generate_2d_dist(distribution, rng=None):
+def generate_2d_dist(distribution: str, rng: Optional[np.random.RandomState] = None) -> tf.distributions.Distribution:
     if rng is None:
         rng = np.random.RandomState()
 

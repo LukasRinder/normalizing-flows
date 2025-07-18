@@ -7,6 +7,7 @@ POWER: http://archive.ics.uci.edu/ml/datasets/Individual+household+electric+powe
 GAS: http://archive.ics.uci.edu/ml/datasets/Gas+sensor+array+under+dynamic+gas+mixtures
 MINIBOONE: http://archive.ics.uci.edu/ml/datasets/MiniBooNE+particle+identification
 '''
+from typing import Tuple, Optional
 import os
 import pandas as pd
 import numpy as np
@@ -22,12 +23,20 @@ class POWER:
 
     class Data:
 
-        def __init__(self, data):
+        x: np.ndarray
+        N: int
+
+        def __init__(self, data: np.ndarray) -> None:
 
             self.x = data.astype(np.float32)
             self.N = self.x.shape[0]
 
-    def __init__(self):
+    trn: Data
+    val: Data
+    tst: Data
+    n_dims: int
+
+    def __init__(self) -> None:
 
         trn, val, tst = self.load_data_normalised()
 
@@ -47,13 +56,13 @@ class POWER:
         plt.show()
     """
 
-    def load_data(self):
+    def load_data(self) -> np.ndarray:
         path = os.path.join(os.path.dirname(dt.__file__), data_dir + '/power/data.npy')
         return np.load(path)
 
 
 
-    def load_data_split_with_noise(self):
+    def load_data_split_with_noise(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
         rng = np.random.RandomState(42)
 
@@ -87,7 +96,7 @@ class POWER:
         return data_train, data_validate, data_test
 
 
-    def load_data_normalised(self):
+    def load_data_normalised(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
         data_train, data_validate, data_test = self.load_data_split_with_noise()
         data = np.vstack((data_train, data_validate))
@@ -104,12 +113,20 @@ class GAS:
 
     class Data:
 
-        def __init__(self, data):
+        x: np.ndarray
+        N: int
+
+        def __init__(self, data: np.ndarray) -> None:
 
             self.x = data.astype(np.float32)
             self.N = self.x.shape[0]
 
-    def __init__(self):
+    trn: Data
+    val: Data
+    tst: Data
+    n_dims: int
+
+    def __init__(self) -> None:
         file = os.path.join(os.path.dirname(dt.__file__), data_dir + '/gas/ethylene_CO.pickle')
         trn, val, tst = self.load_data_and_clean_and_split(file)
 
@@ -129,7 +146,7 @@ class GAS:
         plt.show()
     '''
 
-    def load_data(self, file):
+    def load_data(self, file: str) -> pd.DataFrame:
 
         data = pd.read_pickle(file)
         # data = pd.read_pickle(file).sample(frac=0.25)
@@ -140,14 +157,14 @@ class GAS:
         return data
 
 
-    def get_correlation_numbers(self, data):
+    def get_correlation_numbers(self, data: pd.DataFrame) -> np.ndarray:
         C = data.corr()
         A = C > 0.98
         B = A.as_matrix().sum(axis=1)
         return B
 
 
-    def load_data_and_clean(self, file):
+    def load_data_and_clean(self, file: str) -> pd.DataFrame:
 
         data = self.load_data(file)
         B = self.get_correlation_numbers(data)
@@ -163,7 +180,7 @@ class GAS:
         return data
 
 
-    def load_data_and_clean_and_split(self, file):
+    def load_data_and_clean_and_split(self, file: str) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
         data = self.load_data_and_clean(file).as_matrix()
         N_test = int(0.1*data.shape[0])
@@ -180,12 +197,20 @@ class MINIBOONE:
 
     class Data:
 
-        def __init__(self, data):
+        x: np.ndarray
+        N: int
+
+        def __init__(self, data: np.ndarray) -> None:
 
             self.x = data.astype(np.float32)
             self.N = self.x.shape[0]
 
-    def __init__(self):
+    trn: Data
+    val: Data
+    tst: Data
+    n_dims: int
+
+    def __init__(self) -> None:
         file = os.path.join(os.path.dirname(dt.__file__), data_dir + '/miniboone/data.npy')
         trn, val, tst = self.load_data_normalised(file)
 
@@ -205,7 +230,7 @@ class MINIBOONE:
         plt.show()
     '''
 
-    def load_data(self, root_path):
+    def load_data(self, root_path: str) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         # NOTE: To remember how the pre-processing was done.
         # data = pd.read_csv(root_path, names=[str(x) for x in range(50)], delim_whitespace=True)
         # print data.head()
@@ -237,7 +262,7 @@ class MINIBOONE:
         return data_train, data_validate, data_test
 
 
-    def load_data_normalised(self, root_path):
+    def load_data_normalised(self, root_path: str) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
         data_train, data_validate, data_test = self.load_data(root_path)
         data = np.vstack((data_train, data_validate))
@@ -258,12 +283,20 @@ class HEPMASS:
 
     class Data:
 
-        def __init__(self, data):
+        x: np.ndarray
+        N: int
+
+        def __init__(self, data: np.ndarray) -> None:
 
             self.x = data.astype(np.float32)
             self.N = self.x.shape[0]
 
-    def __init__(self):
+    trn: Data
+    val: Data
+    tst: Data
+    n_dims: int
+
+    def __init__(self) -> None:
         path = os.path.join(os.path.dirname(dt.__file__), data_dir + '/hepmass/')
         trn, val, tst = self.load_data_no_discrete_normalised_as_array(path)
 
@@ -283,7 +316,7 @@ class HEPMASS:
         plt.show()
     '''
 
-    def load_data(self, path):
+    def load_data(self, path: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
         data_train = pd.read_csv(filepath_or_buffer=os.path.join(path, "1000_train.csv"), index_col=False)
         data_test = pd.read_csv(filepath_or_buffer=os.path.join(path, "1000_test.csv"), index_col=False)
@@ -291,7 +324,7 @@ class HEPMASS:
         return data_train, data_test
 
 
-    def load_data_no_discrete(self, path):
+    def load_data_no_discrete(self, path: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         Loads the positive class examples from the first 10 percent of the dataset.
         """
@@ -308,7 +341,7 @@ class HEPMASS:
         return data_train, data_test
 
 
-    def load_data_no_discrete_normalised(self, path):
+    def load_data_no_discrete_normalised(self, path: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
         data_train, data_test = self.load_data_no_discrete(path)
         mu = data_train.mean()
@@ -319,7 +352,7 @@ class HEPMASS:
         return data_train, data_test
 
 
-    def load_data_no_discrete_normalised_as_array(self, path):
+    def load_data_no_discrete_normalised_as_array(self, path: str) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
         data_train, data_test = self.load_data_no_discrete_normalised(path)
         data_train, data_test = data_train.as_matrix(), data_test.as_matrix()

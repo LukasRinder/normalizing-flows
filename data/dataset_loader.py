@@ -6,6 +6,7 @@ Currently implemented datasets:
 2. Celeb A
 """
 
+from typing import Tuple, Union, Optional
 import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
@@ -16,7 +17,7 @@ from data import uci_classes
 """----------------------------- Preprocessing Functions --------------------------------"""
 
 
-def logit(z, beta=10e-6):
+def logit(z: tf.Tensor, beta: float = 10e-6) -> tf.Tensor:
     """
     Conversion to logit space according to equation (24) in [Papamakarios et al. (2017)].
     Includes scaling the input image to [0, 1] and conversion to logit space.
@@ -29,7 +30,7 @@ def logit(z, beta=10e-6):
     return tf.math.log(inter/(1-inter))  # logit function
 
 
-def inverse_logit(x, beta=10e-6):
+def inverse_logit(x: tf.Tensor, beta: float = 10e-6) -> tf.Tensor:
     """
     Reverts the preprocessing steps and conversion to logit space and outputs an image in
     range [0, 256]. Inverse of equation (24) in [Papamakarios et al. (2017)].
@@ -45,7 +46,7 @@ def inverse_logit(x, beta=10e-6):
 """-------------------------------------- MNIST -----------------------------------------"""
 
 
-def load_and_preprocess_mnist(logit_space=True, batch_size=128, shuffle=True, classes=-1, channels=False):
+def load_and_preprocess_mnist(logit_space: bool = True, batch_size: int = 128, shuffle: bool = True, classes: int = -1, channels: bool = False) -> Tuple[tf.data.Dataset, tf.data.Dataset, tf.data.Dataset, int]:
     """
      Loads and preprocesses the MNIST dataset. Train set: 50000, val set: 10000,
      test set: 10000.
@@ -108,7 +109,7 @@ def load_and_preprocess_mnist(logit_space=True, batch_size=128, shuffle=True, cl
 """-------------------------------------------- UCI datasets --------------------------------------------------------"""
 
 
-def load_and_preprocess_uci(uci_dataset="power", batch_size=128, shuffle=True):
+def load_and_preprocess_uci(uci_dataset: str = "power", batch_size: int = 128, shuffle: bool = True) -> Tuple[tf.data.Dataset, tf.data.Dataset, tf.data.Dataset, np.ndarray]:
     """
     Loads and preprocesses the uci dataset. See more details in uci_classes.
     Downdload the datasets from: https://zenodo.org/record/1161203#.Wmtf_XVl8eN
@@ -154,11 +155,11 @@ def load_and_preprocess_uci(uci_dataset="power", batch_size=128, shuffle=True):
 
     return data_train, data_validate, data_test, intervals
     
-def load_and_preprocess_celeb(batch_size=32, shuffle=True, download=True):
+def load_and_preprocess_celeb(batch_size: int = 32, shuffle: bool = True, download: bool = True) -> Tuple[tf.data.Dataset, tf.data.Dataset, tf.data.Dataset]:
     # get preprocessed train, validation, and test data
     celeb_dataset = tfds.load(name="celeb_a", batch_size=batch_size, shuffle_files=shuffle, download=download)
     batched_train_data = celeb_dataset["train"]
     batched_val_data = celeb_dataset["validation"]
     batched_test_data = celeb_dataset["test"]
     
-    return data_train, data_validate, data_test
+    return batched_train_data, batched_val_data, batched_test_data

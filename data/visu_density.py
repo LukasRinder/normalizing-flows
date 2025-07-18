@@ -1,3 +1,4 @@
+from typing import Optional
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import tensorflow_probability as tfp
@@ -5,7 +6,7 @@ import numpy as np
 
 tfd = tfp.distributions
 
-def plot_heatmap_2d(dist, xmin=-4.0, xmax=4.0, ymin=-4.0, ymax=4.0, mesh_count=1000, name=None):
+def plot_heatmap_2d(dist: tf.distributions.Distribution, xmin: float = -4.0, xmax: float = 4.0, ymin: float = -4.0, ymax: float = 4.0, mesh_count: int = 1000, name: Optional[str] = None) -> None:
     plt.figure()
     
     x = tf.linspace(xmin, xmax, mesh_count)

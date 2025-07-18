@@ -1,3 +1,4 @@
+from typing import List, Tuple, Union, Optional
 from normalizingflows.flow_catalog import PlanarFlow, Made, RealNVP, BatchNorm, NeuralSplineFlow, get_trainable_variables
 import numpy as np
 import tensorflow as tf
@@ -7,8 +8,13 @@ tfb = tfp.bijectors
 from enum import Enum
 from utils.types import DataType, FlowType
 
-class Flow():
-    def __init__(self, flow_name, num_layers, input_output_shape_tuple, data_type: DataType, hidden_units=None, intervals=None, number_of_bins=None):
+class Flow:
+    flow_type: FlowType
+    num_layers: int
+    hidden_units: Optional[int]
+    distribution: tf.distributions.TransformedDistribution
+
+    def __init__(self, flow_name: str, num_layers: int, input_output_shape_tuple: Tuple[int, Union[int, Tuple[int, int]]], data_type: DataType, hidden_units: Optional[int] = None, intervals: Optional[List[float]] = None, number_of_bins: Optional[int] = None) -> None:
         self.flow_type = FlowType[flow_name.lower()]
         self.num_layers = num_layers
         self.hidden_units = hidden_units
@@ -29,7 +35,7 @@ class Flow():
         base_dist = tfd.MultivariateNormalDiag(loc=tf.zeros(shape=input_dim, dtype=tf.float32))
         permutation = tf.cast(np.concatenate((np.arange(input_dim / 2, input_dim), np.arange(0, input_dim / 2))),
                               tf.int32)
-        bijectors = []
+        bijectors: List[tf.bijectors.Bijector] = []
 
         if self.flow_type is FlowType.planar:
             assert data_type is DataType.toydata or data_type is DataType.uci, f"{self.flow_type} is not defined on this type dataset"
@@ -86,15 +92,19 @@ class Flow():
         )
         self.distribution = dist
 
-    def get_num_layers(self):
+    def get_num_layers(self) -> int:
         return self.num_layers
-    def get_distribution(self):
+    
+    def get_distribution(self) -> tf.distributions.TransformedDistribution:
         return self.distribution
-    def get_n_trainable_variables(self):
+    
+    def get_n_trainable_variables(self) -> int:
         return get_trainable_variables(self.distribution)
-    def get_flow_type(self):
+    
+    def get_flow_type(self) -> FlowType:
         return self.flow_type
-    def get_flow_shape(self):
+    
+    def get_flow_shape(self) -> Union[str, int]:
         if self.flow_type is FlowType.planar:
             return "no_shape"
         return self.hidden_units 
